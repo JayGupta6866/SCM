@@ -27,10 +27,4 @@ public class UserController {
 
     // delete contact page
 
-    //git ttest comment
-
-    // push reqest commit
-
-    // new collab
-
 }
