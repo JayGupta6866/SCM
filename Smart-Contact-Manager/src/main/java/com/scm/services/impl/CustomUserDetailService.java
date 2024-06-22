@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 import com.scm.repositories.UserRepo;
 
 @Service
-public class CustomUserDetailService implements UserDetailsService{
+public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     private UserRepo userRepo;
 
-    
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // load the user
-        return userRepo.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User Not found with this creds" + username));
+        return userRepo.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not found with this creds : " + username));
     }
 
 }

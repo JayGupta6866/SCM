@@ -1,11 +1,14 @@
 package com.scm.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.scm.services.impl.CustomUserDetailService;
 
 @Configuration
 public class SecurityConfig {
@@ -23,14 +26,20 @@ public class SecurityConfig {
     //     return inMemoryUserDetailsManager;
     // }
 
+    @Autowired
+    private CustomUserDetailService userDetailService;
+
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(null);
+        //object of user detail service
+        daoAuthenticationProvider.setUserDetailsService(userDetailService);
+        //object of password encoder
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }
 
+    @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
