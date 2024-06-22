@@ -18,11 +18,17 @@ import com.scm.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+
 @Controller
 public class PageController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/home";
+    }
 
     @RequestMapping("/home")
     public String home(Model model) {
