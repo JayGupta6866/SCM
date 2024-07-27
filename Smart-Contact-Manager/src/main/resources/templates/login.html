@@ -28,15 +28,16 @@
               </span>
               place ...
             </p>
-
+            <div class="text-red-400 my-3 text-center" th:if="${param.error}">
+              Invalid Username and Password
+            </div>
+            <div class="text-blue-400 my-3 text-center" th:if="${param.logout}">
+              You've been logged out
+            </div>
             <!-- form -->
-            <form
-              method="post"
-              th:action="@{'/authenticate'}"
-              novalidate
-            >
-              <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+            <form method="post" data-th-action="@{'/authenticate'}">
               <!-- username -->
+              
               <div class="mb-3 mt-3">
                 <label
                   for="email"
@@ -47,7 +48,6 @@
                   name="email"
                   type="email"
                   id="email"
-                  
                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                   placeholder="name@gmail.com"
                   required
@@ -70,7 +70,6 @@
                   name="password"
                   type="password"
                   id="password"
-                  
                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                   placeholder="********"
                   required
@@ -81,9 +80,11 @@
                   data-th-errors="*{password}"
                 ></p> -->
               </div>
-
-
-
+              <!-- <input
+                type="hidden"
+                data-th-name="${_csrf.parameterName}"
+                data-th-value="${_csrf.token}"
+              /> -->
               <!-- submit -->
               <button
                 type="submit"

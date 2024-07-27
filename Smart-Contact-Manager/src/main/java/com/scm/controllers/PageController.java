@@ -17,6 +17,8 @@ import com.scm.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @Controller
@@ -49,12 +51,12 @@ public class PageController {
         return "services";
     }
 
-    @RequestMapping("/contact")
+    @GetMapping("/contact")
     public String contactPage() {
         return "contact";
     }
 
-    @RequestMapping("/login")
+    @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
@@ -68,13 +70,13 @@ public class PageController {
 
     // processing the sign up
     @PostMapping("/register")
-    public String processRegister(@Valid @ModelAttribute UserForm userForm, BindingResult bindingResult, HttpSession session) {
+    public String processRegister(@Valid @ModelAttribute UserForm userForm, BindingResult rbindingResult, HttpSession session) {
         // fetch the form data
         // create class of Userform
         // check the modelAttribute
         System.out.println(userForm);
         // validate
-        if(bindingResult.hasErrors()){
+        if(rbindingResult.hasErrors()){
             return "signup";
         }
 
@@ -97,6 +99,7 @@ public class PageController {
         user.setPassword(userForm.getPassword());
         user.setPhoneNumber(userForm.getPhoneNumber());
         user.setAbout(userForm.getAbout());
+        user.setEnabled(false);
         user.setProfilePic("https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png");
 
         User savedUser = userService.saveUser(user);

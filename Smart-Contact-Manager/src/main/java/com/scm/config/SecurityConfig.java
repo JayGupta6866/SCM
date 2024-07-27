@@ -50,7 +50,9 @@ public class SecurityConfig {
             // authorize.requestMatchers("/home","/signup").permitAll();
             authorize.requestMatchers("/user/**").authenticated();
             authorize.anyRequest().permitAll();
-        });
+        }
+        );
+        //.csrf((csrf) -> csrf.disable());
 
 
         // default form loginpage
@@ -60,7 +62,7 @@ public class SecurityConfig {
             // validate details on this page
             formLogin.loginProcessingUrl("/authenticate");
             // after successful login, redirect to this page
-            formLogin.successForwardUrl("/user/profile");
+            formLogin.successForwardUrl("/user/dashboard");
             // after failed login, redirect to this page
             //formLogin.failureForwardUrl("/login?error=true");
             // this is the username parameter to look for when authenticating user
