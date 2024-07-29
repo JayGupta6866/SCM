@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +33,9 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailService userDetailService;
 
+    @Autowired
+    private OAuthAuthenticationSucessHandler handler;
+
     // CONFIGURATION OF AUTHENCIATION PROVIDER
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -50,10 +54,8 @@ public class SecurityConfig {
             // authorize.requestMatchers("/home","/signup").permitAll();
             authorize.requestMatchers("/user/**").authenticated();
             authorize.anyRequest().permitAll();
-        }
-        );
-        //.csrf((csrf) -> csrf.disable());
-
+        });
+        // .csrf((csrf) -> csrf.disable());
 
         // default form loginpage
         http.formLogin(formLogin -> {
@@ -64,7 +66,7 @@ public class SecurityConfig {
             // after successful login, redirect to this page
             formLogin.successForwardUrl("/user/dashboard");
             // after failed login, redirect to this page
-            //formLogin.failureForwardUrl("/login?error=true");
+            // formLogin.failureForwardUrl("/login?error=true");
             // this is the username parameter to look for when authenticating user
             formLogin.usernameParameter("email");
             // this is the password parameter to look for when authenticating user
@@ -75,6 +77,13 @@ public class SecurityConfig {
         http.logout(logout -> {
             logout.logoutUrl("/do-logout");
             logout.logoutSuccessUrl("/login?logout=true");
+        });
+
+        // oauth Configuration
+
+        http.oauth2Login(oauth -> {
+            oauth.loginPage("/login");
+            oauth.successHandler(handler);
         });
         return http.build();
     }

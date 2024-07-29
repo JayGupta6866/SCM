@@ -37,7 +37,7 @@
             <!-- form -->
             <form method="post" data-th-action="@{'/authenticate'}">
               <!-- username -->
-              
+
               <div class="mb-3 mt-3">
                 <label
                   for="email"
@@ -93,6 +93,13 @@
                 Login Account
               </button>
             </form>
+            <div class="socialButonContainer flex justify-center mt-7">
+              <a
+                class="login-with-google-btn"
+                data-th-href="@{'oauth2/authorization/google'}"
+                >Login with Google</a
+              >
+            </div>
           </div>
         </div>
       </div>

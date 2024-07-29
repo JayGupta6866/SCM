@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html
-class=""
+  class=""
   lang="en"
   xmlns:th="http://www.thymeleaf.org"
   th:fragment="parent(content,title)"
@@ -10,21 +10,23 @@ class=""
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:replace="${title}">Base</title>
     <link rel="stylesheet" th:href="@{'/css/output.css'}" />
+    <link rel="stylesheet" data-th-href="@{'css/style.css'}" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"
       rel="stylesheet"
     />
   </head>
-  <body class=" dark:bg-gray-950">
-    
+  <body class="dark:bg-gray-950">
     <div th:replace="~{navbar :: navbar}"></div>
 
     <div class="p-5">
       <section th:replace="${content}"></section>
     </div>
-    
-    <footer class="text-xl p-4 font-mono text-center text-blue-700 dark:text-blue-300">
-        Website by JAY GUPTA for LEARNING 💙
+
+    <footer
+      class="text-xl p-4 font-mono text-center text-blue-700 dark:text-blue-300"
+    >
+      Website by JAY GUPTA for LEARNING 💙
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script th:src="@{'/js/script.js'}"></script>
