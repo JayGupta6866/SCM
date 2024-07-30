@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -37,38 +38,85 @@ public class OAuthAuthenticationSucessHandler implements AuthenticationSuccessHa
             Authentication authentication) throws IOException, ServletException {
         logger.info("onAuthenticationSuccess Handler");
 
-        DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+        // identify the provider
+        var OAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+        String authorizedClientRegistraionId = OAuth2AuthenticationToken.getAuthorizedClientRegistrationId();
+        logger.info(authorizedClientRegistraionId);
 
-        // logger.info(user.getName());
-        // user.getAttributes().forEach((key,value)->{
-        // logger.info("{} => {}",key,value);
-        // logger.info(user.getAuthorities().toString());
-        // });
-        String email = user.getAttribute("email").toString();
-        String name = user.getAttribute("name").toString();
-        String picture = user.getAttribute("picture").toString();
+        var oAuthUUser = (DefaultOAuth2User) authentication.getPrincipal();
+        oAuthUUser.getAttributes().forEach((key, value) -> {
+            logger.info("{} => {}", key, value);
+        });
 
-        // create user and save to database
+        User user = new User();
+        user.setUserId(UUID.randomUUID().toString());
+        user.setRoleList(List.of(AppConstants.ROLE_USER));
+        user.setEnabled(true);
+        user.setEmailVerified(true);
 
-        User user1 = new User();
-        user1.setEmail(email);
-        user1.setName(name);
-        user1.setProfilePic(picture);
-        user1.setPassword("password");
-        user1.setUserId(UUID.randomUUID().toString());
-        user1.setProvider(Providers.Gooogle);
-        user1.setEnabled(true);
-        user1.setEmailVerified(true);
-        user1.setProviderUserId(user.getName());
-        user1.setRoleList(List.of(AppConstants.ROLE_USER));
-        user1.setAbout("This user is created by Google");
+        if (authorizedClientRegistraionId.equalsIgnoreCase("google")) {
 
-        User user2 = userRepo.findByEmail(email).orElse(null);
-        if (user2 == null) {
-            userRepo.save(user1);
-            logger.info("User created successfully: " + user1.getEmail());
+            user.setEmail(oAuthUUser.getAttribute("email").toString());
+            user.setProfilePic(oAuthUUser.getAttribute("picture").toString());
+            user.setName(oAuthUUser.getAttribute("name").toString());
+            user.setProvider(Providers.Gooogle);
+            user.setProviderUserId(oAuthUUser.getName());
+            user.setAbout("This user is set using google");
+            user.setPassword("password");
+
+        } else if (authorizedClientRegistraionId.equalsIgnoreCase("github")) {
+
+            String email = oAuthUUser.getAttribute("email").toString() != null
+                    ? oAuthUUser.getAttribute("email").toString()
+                    : oAuthUUser.getAttribute("login").toString() + "@github.com";
+            user.setEmail(email);
+            user.setProfilePic(oAuthUUser.getAttribute("avatar_url").toString());
+            user.setName(oAuthUUser.getAttribute("name").toString());
+            user.setProvider(Providers.Github);
+            user.setProviderUserId(oAuthUUser.getAttribute("name"));
+            user.setAbout("This user is set using github");
+            user.setPassword("password");
+
+        } else {
+            logger.info("Unsupported OAuth2 provider: " + authorizedClientRegistraionId);
+            // return if unsupported provider
         }
 
+        /*
+         * DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+         * 
+         * // logger.info(user.getName());
+         * // user.getAttributes().forEach((key,value)->{
+         * // logger.info("{} => {}",key,value);
+         * // logger.info(user.getAuthorities().toString());
+         * // });
+         * String email = user.getAttribute("email").toString();
+         * String name = user.getAttribute("name").toString();
+         * String picture = user.getAttribute("picture").toString();
+         * 
+         * // create user and save to database
+         * 
+         * 
+         * user1.setEmail(email);
+         * user1.setName(name);
+         * user1.setProfilePic(picture);
+         * 
+         * 
+         * user1.setProvider(Providers.Gooogle);
+         * user1.setEnabled(true);
+         * user1.setEmailVerified(true);
+         * user1.setProviderUserId(user.getName());
+         * 
+         * user1.setAbout("This user is created by Google");
+         * 
+         * 
+         */
+
+        User user2 = userRepo.findByEmail(user.getEmail()).orElse(null);
+        if (user2 == null) {
+            userRepo.save(user);
+            logger.info("User created successfully: " + user.getEmail());
+        }
         new DefaultRedirectStrategy().sendRedirect(request, response, "/user/dashboard");
     }
 
