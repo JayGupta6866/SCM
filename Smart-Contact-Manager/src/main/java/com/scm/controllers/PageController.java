@@ -111,6 +111,6 @@ public class PageController {
         session.setAttribute("message", msg);
 
         // redirect to login
-        return "redirect:/signup";
+        return "redirect:/login";
     }
 }
